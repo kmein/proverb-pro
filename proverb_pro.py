@@ -64,7 +64,9 @@ def apply_proverb(image_path, proverb):
 
     draw.text(coord, proverb, colour, font=font)
 
-    image.save(os.path.join(OUTPUT_DIR, normalise(proverb) + ".jpg"))
+    path = os.path.join(OUTPUT_DIR, normalise(proverb) + ".jpg")
+    print(path)
+    image.save(path)
 
 if __name__ == "__main__":
     apply_proverb(get_random_image(), get_proverb())
