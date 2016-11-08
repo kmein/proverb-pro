@@ -67,9 +67,18 @@ def apply_proverb(image_path, proverb):
     draw.text(coord, proverb, colour, font=font)
 
     path = os.path.join(OUTPUT_DIR, normalise(proverb) + ".jpg")
-    print(path)
     image.save(path)
+    return path
 
 if __name__ == "__main__":
-    apply_proverb(get_random_image(), get_proverb())
+    from argparse import ArgumentParser
+    parser = ArgumentParser(description="Generate hilarious proverbs on top of inspiring pictures")
+    parser.add_argument("-i", "--image", help="image file path", nargs="?")
+    parser.add_argument("-t", "--text", help="text to add", nargs="?")
+    args = parser.parse_args()
+
+    text = get_proverb() if args.text is None else args.text
+    image = get_random_image() if args.image is None else args.image
+
+    print(apply_proverb(image, text))
 
