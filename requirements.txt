@@ -1,2 +1,3 @@
 Pillow
 beautifulsoup4
+telepot
