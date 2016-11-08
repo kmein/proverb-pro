@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-from PIL import Image
-from PIL import ImageColor
-from PIL import ImageDraw
-from PIL import ImageFont
+from PIL import Image, ImageColor, ImageDraw, ImageFont
 from bs4 import BeautifulSoup
 import os
 import random
@@ -30,6 +27,7 @@ def get_random_image():
 
 def apply_proverb(image_path, proverb):
     assert os.path.exists(FONT_FILE)
+    assert os.path.exists(image_path)
 
     def normalise(value):
         import string
@@ -48,16 +46,20 @@ def apply_proverb(image_path, proverb):
     def complementary_colour(rgb):
         return tuple(255 - b for b in rgb)
 
-    fontsize = 1 # starting font size
-    image = Image.open(image_path)
-    width, height = image.size
-    draw = ImageDraw.Draw(image)
-    font = ImageFont.truetype(FONT_FILE, fontsize)
-    while font.getsize(proverb)[0] < FONT_SCALE * width: # increase font size until it fits the image
-        fontsize += 1
+    def adjust_font_size(image_width, proverb):
+        fontsize = 1
         font = ImageFont.truetype(FONT_FILE, fontsize)
+        while font.getsize(proverb)[0] < FONT_SCALE * image_width:
+            fontsize += 1
+            font = ImageFont.truetype(FONT_FILE, fontsize)
+        return font
 
+    image = Image.open(image_path)
+    draw = ImageDraw.Draw(image)
+    width, height = image.size
+    font = adjust_font_size(width, proverb)
     w, h = font.getsize(proverb)
+
     coord = ((width - w)/2, (height - h)/2)
 
     colour = complementary_colour(get_main_color(image))
