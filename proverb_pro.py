@@ -25,6 +25,14 @@ def get_random_image():
     cwd = os.path.dirname(__file__)
     return os.path.join(cwd, IMAGE_DIR, random.choice(os.listdir(IMAGE_DIR)))
 
+def weighted_average(items):
+    item_count = sum(item[0] for item in items)
+    item_sum = [0] * len(items[0][1])
+    for freq, item in items:
+        for i in range(len(item)):
+            item_sum[i] += freq * item[i]
+    return (isum // item_count for isum in item_sum)
+
 def apply_proverb(image_path, proverb):
     assert os.path.exists(FONT_FILE)
     assert os.path.exists(image_path)
@@ -37,14 +45,7 @@ def apply_proverb(image_path, proverb):
     def get_main_color(image):
         width, height = image.size
         colours = image.getcolors(width * height)
-        colour_count = sum(tup[0] for tup in colours)
-        colour_sum = [0, 0, 0]
-        for freq, c in colours:
-            colour_sum[0] += freq * c[0]
-            colour_sum[1] += freq * c[1]
-            colour_sum[2] += freq * c[2]
-        colour_avg = (component // colour_count for component in colour_sum)
-        return colour_avg
+        return weighted_average(colours)
 
     def complementary_colour(rgb):
         return tuple(255 - b for b in rgb)
