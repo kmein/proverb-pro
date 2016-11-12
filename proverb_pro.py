@@ -36,12 +36,15 @@ def apply_proverb(image_path, proverb):
 
     def get_main_color(image):
         width, height = image.size
-        colors = image.getcolors(width * height)
-        max_occurence, most_present = 0, 0
-        for c in colors:
-            if c[0] > max_occurence:
-                (max_occurence, most_present) = c
-        return most_present
+        colours = image.getcolors(width * height)
+        colour_count = sum(tup[0] for tup in colours)
+        colour_sum = [0, 0, 0]
+        for freq, c in colours:
+            colour_sum[0] += freq * c[0]
+            colour_sum[1] += freq * c[1]
+            colour_sum[2] += freq * c[2]
+        colour_avg = (component // colour_count for component in colour_sum)
+        return colour_avg
 
     def complementary_colour(rgb):
         return tuple(255 - b for b in rgb)
