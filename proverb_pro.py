@@ -55,7 +55,7 @@ def complementary(rgb):
     return tuple(255 - b for b in rgb)
 
 
-def apply_proverb(image_path, proverb, main_colour):
+def apply_proverb(image_path, proverb, main_colour=black_white):
     assert os.path.exists(FONT_FILE)
     assert os.path.exists(image_path)
 
