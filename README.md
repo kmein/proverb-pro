@@ -32,6 +32,11 @@ If any of `-i` and `-t` are not provided, they are going to be randomly chosen:
 The image is taken from the `img/` directory within this repo and the text comes
 from [Sprichwortgenerator](http://sprichwort.gener.at/or/).
 
+If `-c` is not used, `blackwhite` will be chosen. `average` colours the text
+based on the average colour of the image, `frequency` uses the most frequent
+colour and `blackwhite` uses the average colour and then either uses black or
+white as the text colour.
+
 When `proverb_pro.py` is run, it outputs the path of the generated image file.
 **NOTE**: By default it outputs to a folder called `out/` which isn't present in
 this repo because stupid git can't handle empty directories.
