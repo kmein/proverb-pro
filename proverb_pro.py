@@ -107,7 +107,7 @@ if __name__ == "__main__":
     parser.add_argument("-i", "--image", help="image file path", nargs="?")
     parser.add_argument("-t", "--text", help="text to add", nargs="?")
     parser.add_argument("-c", "--colours", help="select the colour recognition mechanism",
-            choices=[AVERAGE_CR, FREQUENCY_CR, BLACKWHITE_CR], default=AVERAGE_CR, nargs="?")
+            choices=[AVERAGE_CR, FREQUENCY_CR, BLACKWHITE_CR], default=BLACKWHITE_CR, nargs="?")
     args = parser.parse_args()
 
     text = get_proverb() if args.text is None else args.text
