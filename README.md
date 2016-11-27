@@ -14,6 +14,7 @@ only for the Proverb Pro, but also for the Proverb Bot.
 
 ```
 usage: proverb_pro.py [-h] [-i [IMAGE]] [-t [TEXT]]
+                      [-c [{average,frequency,blackwhite}]]
 
 Generate hilarious proverbs on top of inspiring pictures
 
@@ -23,6 +24,8 @@ optional arguments:
                         image file path
   -t [TEXT], --text [TEXT]
                         text to add
+  -c [{average,frequency,blackwhite}], --colours [{average,frequency,blackwhite}]
+                        select the colour recognition mechanism
 ```
 
 If any of `-i` and `-t` are not provided, they are going to be randomly chosen:
