@@ -33,22 +33,44 @@ def weighted_average(items):
             item_sum[i] += freq * item[i]
     return (isum // item_count for isum in item_sum)
 
-def apply_proverb(image_path, proverb):
+def average_colour(image):
+    width, height = image.size
+    colours = image.getcolors(width * height)
+    return weighted_average(colours)
+
+def most_frequent_colour(image):
+    width, height = image.size
+    colours = image.getcolors(width * height)
+    max_occurrence, most_present = 0, 0
+    for c in colours:
+        if c[0] > max_occurrence:
+            max_occurrence, most_present = c
+    return most_present
+
+def black_white(image):
+    red, green, blue = average_colour(image)
+    return (0, 0, 0) if (red + green + blue) / 3 > 127 else (255, 255, 255)
+
+def complementary(rgb):
+    return tuple(255 - b for b in rgb)
+
+
+def apply_proverb(image_path, proverb, main_colour):
     assert os.path.exists(FONT_FILE)
     assert os.path.exists(image_path)
 
     def normalise(value):
         import string
         allowed = string.ascii_letters + string.digits
-        return ''.join(c if c in allowed else '-' for c in value.lower())
-
-    def get_main_color(image):
-        width, height = image.size
-        colours = image.getcolors(width * height)
-        return weighted_average(colours)
-
-    def complementary_colour(rgb):
-        return tuple(255 - b for b in rgb)
+        return ''.join(
+            c if c in allowed else '-'
+            for c in value.lower()
+                          .replace(".", "")
+                          .replace(",", "")
+                          .replace("ß", "ss")
+                          .replace("ö", "oe")
+                          .replace("ü", "ue")
+                          .replace("ä", "ae"))
 
     def adjust_font_size(image_width, proverb):
         fontsize = 1
@@ -66,7 +88,7 @@ def apply_proverb(image_path, proverb):
 
     coord = ((width - w)/2, (height - h)/2)
 
-    colour = complementary_colour(get_main_color(image))
+    colour = main_colour(image)
 
     draw.text(coord, proverb, colour, font=font)
 
@@ -76,13 +98,26 @@ def apply_proverb(image_path, proverb):
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
+
+    AVERAGE_CR = "average"
+    FREQUENCY_CR = "frequency"
+    BLACKWHITE_CR = "blackwhite"
+
     parser = ArgumentParser(description="Generate hilarious proverbs on top of inspiring pictures")
     parser.add_argument("-i", "--image", help="image file path", nargs="?")
     parser.add_argument("-t", "--text", help="text to add", nargs="?")
+    parser.add_argument("-c", "--colours", help="select the colour recognition mechanism",
+            choices=[AVERAGE_CR, FREQUENCY_CR, BLACKWHITE_CR], default=AVERAGE_CR, nargs="?")
     args = parser.parse_args()
 
     text = get_proverb() if args.text is None else args.text
     image = get_random_image() if args.image is None else args.image
+    if args.colours == AVERAGE_CR:
+        colour_recognition = lambda x: complementary(average_colour(x))
+    elif args.colours == FREQUENCY_CR:
+        colour_recognition = lambda x: complementary(most_frequent_colour(x))
+    elif args.colours == BLACKWHITE_CR:
+        colour_recognition = black_white
 
-    print(apply_proverb(image, text))
+    print(apply_proverb(image, text, colour_recognition))
 
