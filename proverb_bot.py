@@ -39,5 +39,5 @@ if __name__ == "__main__":
         )
         sys.exit(1)
 
-    bot = telepot.Bot(os.environ["TELEGRAM_PROVERB_TOKEN"])
+    bot = telepot.Bot(os.environ["TELEGRAM_PROVERB_TOKEN"].strip())
     bot.message_loop(handle, run_forever=True)
