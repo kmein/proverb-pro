@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 from telepot.namedtuple import ReplyKeyboardMarkup, KeyboardButton
-import bcolors
 import logging
 import telepot
 import os
+import sys
 
 from proverb_pro import *
 
-SEND_PIC = "📷" # ":camera:"
-SEND_TEXT = "💬" # ":speech_balloon:"
+SEND_PIC = "📷"  # ":camera:"
+SEND_TEXT = "💬"  # ":speech_balloon:"
+
 
 def handle(msg):
     content_type, chat_type, chat_id = telepot.glance(msg)
@@ -22,19 +23,21 @@ def handle(msg):
         logging.info("Received command {}, sending text".format(SEND_TEXT))
         bot.sendMessage(chat_id, get_proverb())
     else:
-        keyboard = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text=SEND_PIC)], [KeyboardButton(text=SEND_TEXT)]])
+        keyboard = ReplyKeyboardMarkup(
+            keyboard=[[KeyboardButton(text=SEND_PIC)], [KeyboardButton(text=SEND_TEXT)]]
+        )
         bot.sendMessage(chat_id, "Yo!", reply_markup=keyboard)
 
+
 if __name__ == "__main__":
-    logging.basicConfig(
-        format="{}[%(levelname)s %(asctime)s]{} %(message)s".format(
-            bcolors.BOLD,
-            bcolors.ENDC
-        ), level=logging.INFO
-    )
-    TOKEN = open("proverb_bot.token").read().strip()
+    logging.basicConfig(level=logging.INFO)
 
-    bot = telepot.Bot(TOKEN)
+    if "TELEGRAM_PROVERB_TOKEN" not in os.environ:
+        print(
+            "Please specify bot token in variable TELEGRAM_PROVERB_TOKEN.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
+    bot = telepot.Bot(os.environ["TELEGRAM_PROVERB_TOKEN"])
     bot.message_loop(handle, run_forever=True)
-
-
