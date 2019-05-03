@@ -3,14 +3,15 @@ from PIL import Image, ImageColor, ImageDraw, ImageFont
 from bs4 import BeautifulSoup
 import os
 import random
+import tempfile
 import urllib.request
 
 PROVERB_GENERATOR = "http://sprichwort.gener.at/or/"
 
-IMAGE_DIR = "img"
-OUTPUT_DIR = "out"
+IMAGE_DIR = os.path.join(os.path.dirname(__file__), "backgrounds")
+OUTPUT_DIR = tempfile.TemporaryDirectory()
 
-FONT_FILE = "AmaticSC-Bold.ttf"
+FONT_FILE = os.path.join(os.path.dirname(__file__), "AmaticSC-Bold.ttf")
 FONT_SCALE = 0.8
 
 
@@ -21,9 +22,11 @@ def get_proverb():
         proverb = soup.html.body.find(class_="spwort").string
         return proverb
 
+
 def get_random_image():
     cwd = os.path.dirname(__file__)
     return os.path.join(cwd, IMAGE_DIR, random.choice(os.listdir(IMAGE_DIR)))
+
 
 def weighted_average(items):
     item_count = sum(item[0] for item in items)
@@ -33,10 +36,12 @@ def weighted_average(items):
             item_sum[i] += freq * item[i]
     return (isum // item_count for isum in item_sum)
 
+
 def average_colour(image):
     width, height = image.size
     colours = image.getcolors(width * height)
     return weighted_average(colours)
+
 
 def most_frequent_colour(image):
     width, height = image.size
@@ -47,9 +52,11 @@ def most_frequent_colour(image):
             max_occurrence, most_present = c
     return most_present
 
+
 def black_white(image):
     red, green, blue = average_colour(image)
     return (0, 0, 0) if (red + green + blue) / 3 > 127 else (255, 255, 255)
+
 
 def complementary(rgb):
     return tuple(255 - b for b in rgb)
@@ -61,16 +68,18 @@ def apply_proverb(image_path, proverb, main_colour=black_white):
 
     def normalise(value):
         import string
+
         allowed = string.ascii_letters + string.digits
-        return ''.join(
-            c if c in allowed else '-'
+        return "".join(
+            c if c in allowed else "-"
             for c in value.lower()
-                          .replace(".", "")
-                          .replace(",", "")
-                          .replace("ß", "ss")
-                          .replace("ö", "oe")
-                          .replace("ü", "ue")
-                          .replace("ä", "ae"))
+            .replace(".", "")
+            .replace(",", "")
+            .replace("ß", "ss")
+            .replace("ö", "oe")
+            .replace("ü", "ue")
+            .replace("ä", "ae")
+        )
 
     def adjust_font_size(image_width, proverb):
         fontsize = 1
@@ -86,15 +95,16 @@ def apply_proverb(image_path, proverb, main_colour=black_white):
     font = adjust_font_size(width, proverb)
     w, h = font.getsize(proverb)
 
-    coord = ((width - w)/2, (height - h)/2)
+    coord = ((width - w) / 2, (height - h) / 2)
 
     colour = main_colour(image)
 
     draw.text(coord, proverb, colour, font=font)
 
-    path = os.path.join(OUTPUT_DIR, normalise(proverb) + ".jpg")
+    path = os.path.join(OUTPUT_DIR.name, normalise(proverb) + ".jpg")
     image.save(path)
     return path
+
 
 if __name__ == "__main__":
     from argparse import ArgumentParser
@@ -103,11 +113,19 @@ if __name__ == "__main__":
     FREQUENCY_CR = "frequency"
     BLACKWHITE_CR = "blackwhite"
 
-    parser = ArgumentParser(description="Generate hilarious proverbs on top of inspiring pictures")
+    parser = ArgumentParser(
+        description="Generate hilarious proverbs on top of inspiring pictures"
+    )
     parser.add_argument("-i", "--image", help="image file path", nargs="?")
     parser.add_argument("-t", "--text", help="text to add", nargs="?")
-    parser.add_argument("-c", "--colours", help="select the colour recognition mechanism",
-            choices=[AVERAGE_CR, FREQUENCY_CR, BLACKWHITE_CR], default=BLACKWHITE_CR, nargs="?")
+    parser.add_argument(
+        "-c",
+        "--colours",
+        help="select the colour recognition mechanism",
+        choices=[AVERAGE_CR, FREQUENCY_CR, BLACKWHITE_CR],
+        default=BLACKWHITE_CR,
+        nargs="?",
+    )
     args = parser.parse_args()
 
     text = get_proverb() if args.text is None else args.text
@@ -120,4 +138,3 @@ if __name__ == "__main__":
         colour_recognition = black_white
 
     print(apply_proverb(image, text, colour_recognition))
-
