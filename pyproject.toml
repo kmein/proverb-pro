@@ -1,19 +1,16 @@
 [tool.poetry]
 name = "proverb-pro"
-version = "0.2.0"
+version = "0.3.0"
 description = "Proverb generator"
 authors = ["Kierán Meinhardt <kmein@posteo.de>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-telebot = "^0.0.4"
 beautifulsoup4 = "^4.9.3"
-telepot = "^12.7"
 Pillow = "^8.2.0"
 
 [tool.poetry.scripts]
 proverb-pro = 'proverb_pro.cli:run'
-proverb-bot = 'proverb_pro.bot:run'
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

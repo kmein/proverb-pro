@@ -1,4 +1,4 @@
-from proverb_pro.generator import (
+from proverb_pro import (
     get_proverb,
     get_random_image,
     apply_proverb,

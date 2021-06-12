@@ -41,13 +41,6 @@ When `proverb_pro.py` is run, it outputs the path of the generated image file.
 **NOTE**: By default it outputs to a folder called `out/` which isn't present in
 this repo because stupid git can't handle empty directories.
 
-# The Proverb Bot
-
-The Proverb Bot is basically a [Telegram bot](https://core.telegram.org/bots/)
-interface for the Proverb Pro program. It lets you choose if you want to be sent
-a picture or a text and then sends the respective proverb (with or without a
-picture).
-
 ## Setup
 
 For using the Proverb Bot, you need a Telegram bot token for Proverb
